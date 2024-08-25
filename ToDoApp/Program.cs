@@ -1,6 +1,6 @@
 ﻿Console.WriteLine("Hello. Wellcome to ToDo App. Please Select an Option to Continue...!");
 bool isExitSelected = false;
-List<string> Todos = [];
+List<string> todos = [];
 
 while (!isExitSelected)
 {
@@ -10,29 +10,29 @@ while (!isExitSelected)
     Console.WriteLine("[R]emove a Todo");
     Console.WriteLine("[E]xit the App");
 
-    char userInput = Console.ReadKey().KeyChar;
+    string userInput = Console.ReadLine();
 
 
     switch (userInput)
     {
-        case 'S':
-        case 's':
+        case "S":
+        case "s":
             SeeAllToDos();
             break;
-        case 'A':
-        case 'a':
-            addToDo();
+        case "A":
+        case "a":
+            AddToDo();
             break;
-        case 'R':
-        case 'r':
-            removeTodo();
+        case "R":
+        case "r":
+            RemoveTodo();
             break;
-        case 'E':
-        case 'e':
+        case "E":
+        case "e":
             isExitSelected = true;
             break;
         default:
-            PrintMessage("Invalid Character Please Try Again!");
+            Console.WriteLine("Invalid Character Please Try Again!");
             break;
 
     }
@@ -40,88 +40,157 @@ while (!isExitSelected)
 
 void SeeAllToDos()
 {
-    Console.WriteLine("ToDo items are:");
-    if (Todos.Count == 0)
-    {
-        Console.WriteLine("There is no ToDo!");
-    }
+    if (!AllowContinue())
+        return;
 
-    for (int i = 0; i < Todos.Count; i++)
+    WriteWithWhiteSpace("ToDo items are:");
+  
+
+    for (int i = 0; i < todos.Count; i++)
     {
-        string? item = Todos[i];
+        string? item = todos[i];
         Console.WriteLine($"{i + 1}: {item}");
     }
 }
 
-void removeTodo()
+void AddToDo()
 {
-    bool isValidMessage = false;
-    while (!isValidMessage)
+    string inputMessage = string.Empty;
+    do
     {
-        Console.WriteLine("ToDo items are:");
-        if (Todos.Count == 0)
-        {
-            Console.WriteLine("There is no ToDo!");
-        }
-        Console.WriteLine("Please Select a ToDo Number for Remove:");
+        WriteWithWhiteSpace("Please Enter ToDo Message:");
+        inputMessage = Console.ReadLine();
+    } while (!IsValidMessage(inputMessage));
+    todos.Add(inputMessage);
+
+}
+
+bool IsValidMessage(string message)
+{
+   
+    bool isValid = true;
+    if (message == "")
+    {
+        Console.WriteLine("Invalid Message! Message can not be Empty!");
+        isValid = false;
+    }
+    else if (todos.Contains(message))
+    {
+        Console.WriteLine("Invalid Message! Message can not be Duplicate!");
+        isValid =  false;
+    }
+    return isValid;
+}
+
+void RemoveTodo()
+{
+    if (!AllowContinue())
+    {
+        return;
+    }
+
+    while (true)
+    {
+        WriteWithWhiteSpace("Please select a ToDo number to remove:");
 
         SeeAllToDos();
 
-        Console.WriteLine("Selected index is:");
+        Console.Write("Enter the index of the ToDo you want to remove: ");
         string inputIndex = Console.ReadLine();
-        if (inputIndex == "")
+
+        if (string.IsNullOrWhiteSpace(inputIndex))
         {
-            Console.WriteLine("Invalid Index! Index can not be Empty!");
+            Console.WriteLine("Invalid input! Index cannot be empty or whitespace.");
             continue;
         }
-        if (int.TryParse(inputIndex, out int index))
-        {
-            if (index >= 1 && index <= Todos.Count)
-            {
-                isValidMessage = true;
-                string todoForDelete = Todos[index - 1];
-                Todos.RemoveAt(index - 1);
-                Console.WriteLine($"ToDo Removed: {todoForDelete}");
-            }
-            else
-            {
-                Console.WriteLine("invalid Index! Index is not in correct Range.");
-            }
-        }
-        else
-        {
-            Console.WriteLine("invalid Index! Index Format is invalid.");
-        }
-    }
-    
 
+        if (!int.TryParse(inputIndex, out int index))
+        {
+            Console.WriteLine("Invalid input! Please enter a valid integer.");
+            continue;
+        }
+
+        if (index < 1 || index > todos.Count)
+        {
+            Console.WriteLine($"Invalid index! Please enter a number between 1 and {todos.Count}.");
+            continue;
+        }
+
+        string todoForDelete = todos[index - 1];
+        todos.RemoveAt(index - 1);
+        Console.WriteLine($"ToDo removed: {todoForDelete}");
+        break;
+    }
 }
 
-void addToDo()
+
+bool AllowContinue()
 {
-    bool isValidMessage = false;
-
-    while (!isValidMessage)
+    if (todos.Count == 0)
     {
-        Console.WriteLine();
-        Console.WriteLine("Please Enter ToDo Message:");
-        string inputMessage = Console.ReadLine();
-        if (inputMessage == "")
-        {
-            Console.WriteLine("Invalid Message! Message can not be Empty!");
-        }
-        else if (Todos.Contains(inputMessage))
-        {
-            Console.WriteLine("Invalid Message! Message can not be Duplicate!");
-        }
-        else
-        {
-            isValidMessage = true;
-            Todos.Add(inputMessage);
-        }
+        WriteWithWhiteSpace("There is no ToDo!");
+        return false;
     }
-  
+    else
+    {
+        return true;
+    }
 }
+
+void WriteWithWhiteSpace(string text)
+{
+    Console.WriteLine();
+    Console.WriteLine(text);
+}
+
+
+
+//Code before Improvement
+
+//void RemoveTodo()
+//{
+//    if (!AllowContinue())
+//    {
+//        return;
+//    }
+
+//    bool isValidMessage = false;
+//    while (!isValidMessage)
+//    {
+
+//        WriteWithWhiteSpace("Please Select a ToDo Number for Remove:");
+
+//        SeeAllToDos();
+
+//        Console.WriteLine("Selected index is:");
+//        string inputIndex = Console.ReadLine();
+//        if (inputIndex == "")
+//        {
+//            Console.WriteLine("Invalid Index! Index can not be Empty!");
+//            continue;
+//        }
+//        if (int.TryParse(inputIndex, out int index))
+//        {
+//            if (index >= 1 && index <= todos.Count)
+//            {
+//                isValidMessage = true;
+//                string todoForDelete = todos[index - 1];
+//                todos.RemoveAt(index - 1);
+//                Console.WriteLine($"ToDo Removed: {todoForDelete}");
+//            }
+//            else
+//            {
+//                Console.WriteLine("invalid Index! Index is not in correct Range.");
+//            }
+//        }
+//        else
+//        {
+//            Console.WriteLine("invalid Index! Index Format is invalid.");
+//        }
+//    }
+
+
+//}
 
 //void PrintMessage(string userInputMessage)
 //{
